@@ -1,0 +1,29 @@
+# lib de compilação
+
+$npm install --save nexe
+https://www.npmjs.com/package/nexe
+
+# no arquivo package.json do projeto adicionar:
+
+"scripts": {
+	"build:dev:linux": "NODE_ENV=development BUILD_DEST=linux node compile.js",
+	"build:dev:windows": "NODE_ENV=development BUILD_DEST=windows node compile.js",
+	"build:dev:macos": "NODE_ENV=development BUILD_DEST=macos node compile.js",
+	"build:prod:linux": "NODE_ENV=production BUILD_DEST=linux node compile.js",
+	"build:prod:windows": "NODE_ENV=production BUILD_DEST=windows node compile.js",
+	"build:prod:macos": "NODE_ENV=production BUILD_DEST=macos node compile.js"
+}
+
+// dev = arquivo config/dev.js, prod = arquivo config/prod.js
+
+# COMPILAR para um executavel, no terminal:
+
+$ npm run build:dev:linux
+ou
+$ nom run build:prod:linux
+
+
+//-19-20
+
+//OTIMIZAR A COMPILAÇÃO P/ UM ARQUIVO MAIS LEVE!!!!
+//EXECUTAVEL QUEBRADO, DEBUGAR ARRUMAR!!!!

