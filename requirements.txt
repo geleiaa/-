@@ -1,0 +1,13 @@
+nodejs
+npm
+
+$npm init  // package.json
+
+// axios
+$npm install --save axios  // no dir do projeto
+
+// uniqid
+$npm install --save uniqid   // no dir do projeto
+
+
+continua em c2-serv.txt ===>

