@@ -1,7 +1,8 @@
 ## 1
 $npm i -g @adonisjs/cli
-$adonis new c2-server --api-only (app somente api)
-ransom-jeiesi/c2-server/helpers/index.js
+$adonis new c2-server --api-only (app somente api, no dir do projeto)
+
+# no dir do c2 vai: /helpers/index.js
 
 
 MODELO DE DADOS
@@ -22,7 +23,7 @@ DB_CONNECTION=mysql
 
 $npm install --save mysql
 
-## 5 - criar models/migrations no dir do c2 
+## 5 - criar models/migrations (no dir do c2) 
 
 $adonis make:model Client -m 
 $adonis make:model KeyPair -m 
@@ -41,12 +42,13 @@ table.json("user");
 table.json("os");
 table.boolean("locked").defaultTo(false);
 
-## 6 - instalar adonis jsonable no dir do c2
- (pacote que ajuda o adonis trabalhar com json)
+## 6 - instalar adonis jsonable (no dir do c2)
+(pacote que ajuda o adonis trabalhar com json)
 $adonis install adonis-jsonable
 https://www.npmjs.com/package/adonis-jsonable
 
-# seguir instruções da pág ...
+######## seguir instruções da pág ...
+
 
 ## no arquivo models Client.js alterar e adicionar:
 
